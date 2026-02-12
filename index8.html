@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Dork Builder — Cyber Security Edition</title>
+    <style>
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #151922;
+            --bg-tertiary: #1e242e;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #6c5ce7;
+            --accent-tertiary: #00b894;
+            --text-primary: #e8eaed;
+            --text-secondary: #9aa0a6;
+            --text-muted: #5f6368;
+            --border-color: #2d3748;
+            --shadow: 0 8px 32px rgba(0, 217, 255, 0.15);
+            --glow: 0 0 20px rgba(0, 217, 255, 0.3);
+            --resource-bg: #1a1f2b;
+            --resource-highlight: #ffb86b;
+            --cyber-red: #ff4d4d;
+            --cyber-amber: #ffb347;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            padding-top: 60px;
+            position: relative;
+        }
+
+        header {
+            margin-bottom: 2rem;
+            padding: 0 2rem 2rem 2rem;
+            border-bottom: 1px solid var(--border-color);
+            animation: fadeIn 0.6s ease-out;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            align-items: center;
+            gap: 2rem;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .logo {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            box-shadow: 0 8px 24px rgba(0, 217, 255, 0.4);
+            animation: pulse 3s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .header-content {
+            flex: 1;
+            text-align: center;
+        }
+
+        .header-title {
+            font-size: clamp(1.75rem, 5vw, 3rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+        }
+
+        .developer-credit {
+            background: linear-gradient(135deg, rgba(0, 217, 255, 0.15), rgba(108, 92, 231, 0.15));
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--accent-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--accent-primary);
+            box-shadow: var(--glow);
+            animation: fadeIn 0.8s ease-out 0.3s backwards;
+            white-space: nowrap;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: absolute;
+            top: 0;
+            right: 2rem;
+        }
+
+        .developer-credit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(0, 217, 255, 0.4);
+        }
+
+        .developer-credit::before {
+            content: '💻';
+            margin-right: 0.5rem;
+        }
+
+        .language-toggle {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            display: flex;
+            gap: 5px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 5px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lang-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .lang-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .lang-btn.active {
+            background: white;
+            color: var(--accent-secondary);
+        }
+
+        .content {
+            padding: 30px;
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .sidebar {
+            min-width: 240px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: var(--bg-tertiary);
+            padding: 18px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-label {
+            font-weight: 700;
+            color: var(--accent-primary);
+            margin-bottom: 5px;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background: var(--accent-primary);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            box-shadow: var(--glow);
+            padding-left: 25px;
+        }
+
+        .filter-btn:hover::before {
+            transform: scaleY(1);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            color: var(--bg-primary);
+            box-shadow: var(--glow);
+            padding-left: 25px;
+            font-weight: 700;
+        }
+
+        .filter-btn.active::before {
+            transform: scaleY(1);
+            background: var(--accent-secondary);
+        }
+
+        .cyber-tab {
+            border-left: 6px solid #ff4d4d !important;
+            background: linear-gradient(90deg, rgba(255,75,75,0.1) 0%, rgba(10,14,23,1) 80%);
+            font-weight: 600;
+        }
+
+        .cyber-tab.active {
+            background: #ff4d4d !important;
+            border-color: #ff4d4d !important;
+            color: white !important;
+        }
+
+        .main-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .operator-card {
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .operator-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .operator-card.active {
+            border-color: var(--accent-primary);
+            background: var(--bg-secondary);
+            box-shadow: var(--glow);
+        }
+
+        .operator-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .operator-checkbox {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: var(--accent-primary);
+        }
+
+        .operator-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--accent-primary);
+            flex: 1;
+        }
+
+        .operator-description {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .operator-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .operator-input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow);
+        }
+
+        .operator-input:disabled {
+            background: var(--bg-tertiary);
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .result-section {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .result-label {
+            color: var(--accent-primary);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .result-output {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 15px;
+            color: var(--accent-tertiary);
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            word-break: break-all;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-output.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+        }
+
+        .btn-secondary {
+            background: var(--accent-tertiary);
+            color: var(--bg-primary);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 184, 148, 0.3);
+        }
+
+        .btn-clear {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(231, 76, 60, 0.3);
+        }
+
+        /* Cyber Security Presets Grid */
+        .cyber-preset-section {
+            background: #1a1f2e;
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid #ff4d4d;
+            box-shadow: 0 0 25px rgba(255, 77, 77, 0.2);
+        }
+
+        .cyber-title {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #ff4d4d;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #ff4d4d;
+            padding-bottom: 12px;
+        }
+
+        .cyber-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 15px;
+        }
+
+        .cyber-card {
+            background: #0f121c;
+            border: 1px solid #3a4a5e;
+            border-radius: 12px;
+            padding: 18px;
+            transition: 0.2s;
+            cursor: pointer;
+            border-left: 8px solid #ff4d4d;
+        }
+
+        .cyber-card:hover {
+            transform: scale(1.02);
+            border-color: #ff4d4d;
+            box-shadow: 0 0 20px rgba(255, 77, 77, 0.4);
+            background: #1e2433;
+        }
+
+        .cyber-card h5 {
+            color: #ffb86b;
+            font-size: 1.15rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cyber-card p {
+            color: #b0c4de;
+            font-size: 0.85rem;
+            margin-bottom: 12px;
+            font-family: monospace;
+            background: #0a0c12;
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 3px solid var(--accent-tertiary);
+        }
+
+        .badge-cyber {
+            background: #ff4d4d;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .examples-section {
+            background: var(--bg-tertiary);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        .examples-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: var(--accent-primary);
+            margin-bottom: 15px;
+        }
+
+        .example-item {
+            background: var(--bg-secondary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid var(--border-color);
+        }
+
+        .example-item:hover {
+            border-color: var(--accent-primary);
+            transform: translateX(5px);
+            box-shadow: var(--glow);
+        }
+
+        .example-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .example-query {
+            font-family: 'Courier New', monospace;
+            color: var(--accent-tertiary);
+            font-size: 0.9em;
+        }
+
+        .preset-btn {
+            padding: 12px 16px;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 0.95em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+            text-align: left;
+        }
+
+        .preset-btn:hover {
+            border-color: var(--accent-primary);
+            background: var(--bg-tertiary);
+            transform: translateY(-2px);
+            box-shadow: var(--glow);
+            color: var(--accent-primary);
+        }
+
+        .resource-section {
+            background: #1a1f2b;
+            border-radius: 18px;
+            padding: 30px;
+            margin-top: 40px;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 0 30px rgba(0, 217, 255, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .resource-section::before {
+            content: "📚";
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            font-size: 3.5rem;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        .resource-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #2d4a5e;
+            padding-bottom: 15px;
+        }
+
+        .resource-icon {
+            font-size: 2.2rem;
+            background: rgba(0, 217, 255, 0.2);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--accent-primary);
+            box-shadow: 0 0 15px rgba(0, 217, 255, 0.3);
+        }
+
+        .resource-title {
+            font-size: 1.9rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #ffb86b, #ff9f4a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .resource-card {
+            background: rgba(10, 14, 23, 0.7);
+            backdrop-filter: blur(5px);
+            border: 1px solid #3a4a5a;
+            border-radius: 16px;
+            padding: 18px;
+            transition: all 0.25s;
+            border-left: 6px solid var(--accent-primary);
+        }
+
+        .resource-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-secondary);
+            background: #1c2633;
+            border-left-color: var(--resource-highlight);
+            box-shadow: 0 10px 25px rgba(0, 217, 255, 0.2);
+        }
+
+        .resource-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.25rem;
+            color: #ffd966;
+            margin-bottom: 12px;
+            border-bottom: 1px dashed #2d5a6e;
+            padding-bottom: 8px;
+        }
+
+        .resource-card ul {
+            list-style: none;
+            padding-left: 5px;
+        }
+
+        .resource-card li {
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+
+        .resource-card a {
+            color: #b3e4ff;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.2s;
+            word-break: break-word;
+        }
+
+        .resource-card a:hover {
+            color: var(--resource-highlight);
+            text-decoration: underline;
+            transform: translateX(5px);
+        }
+
+        .badge {
+            background: var(--accent-secondary);
+            padding: 3px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--accent-tertiary);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding-top: 80px;
+            }
+
+            header {
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+                padding: 0 1.5rem 1.5rem 1.5rem;
+            }
+
+            .logo-container {
+                order: -1;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 1.8rem;
+            }
+
+            .header-content {
+                width: 100%;
+            }
+
+            .developer-credit {
+                position: static;
+                margin: 0 auto;
+                font-size: 0.8rem;
+                padding: 0.6rem 1rem;
+            }
+
+            .language-toggle {
+                position: absolute;
+                top: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                right: auto;
+            }
+
+            .content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                min-width: auto;
+            }
+
+            .filter-section {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .filter-label {
+                width: 100%;
+            }
+
+            .operator-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .cyber-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">
+                    🛡️
+                </div>
+            </div>
+            <div class="header-content">
+                <h1 class="header-title" id="headerTitle">Google Dork Builder</h1>
+                <p class="subtitle" id="headerSubtitle">Cyber Security Edition — Professional Dorks for Pentesting & OSINT</p>
+            </div>
+            <a href="#" class="developer-credit">Developed by You</a>
+            <div class="language-toggle">
+                <button class="lang-btn active" onclick="changeLanguage('en')">English</button>
+                <button class="lang-btn" onclick="changeLanguage('bn')">বাংলা</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="sidebar">
+                <div class="filter-section">
+                    <span class="filter-label" id="filterLabel">⚡ FILTER</span>
+                    <button class="filter-btn active" onclick="filterOperators('all')">All (22)</button>
+                    <button class="filter-btn" onclick="filterOperators('basic')">Basic</button>
+                    <button class="filter-btn" onclick="filterOperators('advanced')">Advanced</button>
+                    <button class="filter-btn" onclick="filterOperators('utility')">Utility</button>
+                    <!-- NEW CYBER SECURITY TAB -->
+                    <button class="filter-btn cyber-tab" onclick="showCyberSecurityPresets()" id="cyberTabBtn">🛡️ CYBER SECURITY (20+)</button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Standard operator grid (hidden when cyber presets shown) -->
+                <div id="operatorGridContainer">
+                    <div class="operator-grid" id="operatorGrid"></div>
+                </div>
+
+                <!-- CYBER SECURITY PRESETS GRID (initially hidden) -->
+                <div id="cyberPresetContainer" style="display: none;">
+                    <div class="cyber-preset-section">
+                        <div class="cyber-title">
+                            🛡️ Cyber Security Dork Arsenal 
+                            <span class="badge-cyber">20+ PRO DORKS</span>
+                        </div>
+                        <p style="color: #ddd; margin-bottom: 20px; font-size: 0.95rem;">
+                            Click any card to instantly load a powerful security dork. Use for authorized pentesting & research only.
+                        </p>
+                        <div class="cyber-grid" id="cyberGrid"></div>
+                    </div>
+                </div>
+
+                <!-- Result section (always visible) -->
+                <div class="result-section">
+                    <div class="result-label" id="queryLabel">Generated Google Dork Query</div>
+                    <div class="result-output" id="resultOutput">
+                        <span style="opacity: 0.6;">Select operators above to build your query...</span>
+                    </div>
+                    <div class="button-group">
+                        <button class="btn btn-primary" id="searchBtn" onclick="searchGoogle()">
+                            🔍 Search on Google
+                        </button>
+                        <button class="btn btn-secondary" id="copyBtn" onclick="copyToClipboard()">
+                            📋 Copy Query
+                        </button>
+                        <button class="btn btn-clear" id="clearBtn" onclick="clearAll()">
+                            🗑️ Clear All
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quick Presets (general) -->
+                <div class="examples-section" id="generalPresetsSection">
+                    <div class="examples-title" id="quickPresetsTitle">⚡ Quick Presets</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px;">
+                        <button class="preset-btn" onclick="loadPreset('login')" id="presetLogin">🔐 Login Pages</button>
+                        <button class="preset-btn" onclick="loadPreset('admin')" id="presetAdmin">👤 Admin Panels</button>
+                        <button class="preset-btn" onclick="loadPreset('dashboard')" id="presetDashboard">📊 Dashboards</button>
+                        <button class="preset-btn" onclick="loadPreset('php')" id="presetPhp">🐘 PHP Vulnerabilities</button>
+                        <button class="preset-btn" onclick="loadPreset('config')" id="presetConfig">⚙️ Config Files</button>
+                        <button class="preset-btn" onclick="loadPreset('backup')" id="presetBackup">💾 Backup Files</button>
+                    </div>
+                    
+                    <div class="examples-title" style="margin-top: 20px;" id="examplesTitle">📚 Example Queries</div>
+                    <div class="example-item" onclick="loadExample(0)">
+                        <div class="example-title" id="example1Title">Find login pages on a specific site</div>
+                        <div class="example-query">site:example.com inurl:login</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(1)">
+                        <div class="example-title" id="example2Title">Search for admin panels</div>
+                        <div class="example-query">site:example.com inurl:admin</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(2)">
+                        <div class="example-title" id="example3Title">Find PHP pages with query parameters</div>
+                        <div class="example-query">inurl:php intext:id=</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(3)">
+                        <div class="example-title" id="example4Title">Search for exposed dashboards (excluding demos)</div>
+                        <div class="example-query">intitle:dashboard -demo</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(4)">
+                        <div class="example-title" id="example5Title">Find confidential PDFs (excluding samples)</div>
+                        <div class="example-query">filetype:pdf intext:confidential -sample</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(5)">
+                        <div class="example-title" id="example6Title">Find Excel files with passwords (recent)</div>
+                        <div class="example-query">filetype:xlsx intext:password after:2020-01-01</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(6)">
+                        <div class="example-title" id="example7Title">Search government PDF reports</div>
+                        <div class="example-query">site:gov filetype:pdf intitle:report</div>
+                    </div>
+                    <div class="example-item" onclick="loadExample(7)">
+                        <div class="example-title" id="example8Title">Find old WordPress installations</div>
+                        <div class="example-query">inurl:wp-content filetype:php before:2020-01-01</div>
+                    </div>
+                </div>
+
+                <!-- Resource Library (unchanged) -->
+                <div class="resource-section" id="resourceSection">
+                    <div class="resource-header">
+                        <div class="resource-icon">📘</div>
+                        <span class="resource-title" id="resourceMainTitle">Google Dorking • Resource Library</span>
+                    </div>
+                    <div class="resource-grid">
+                        <div class="resource-card">
+                            <h4>📄 Cheat Sheets &nbsp; <span class="badge">essential</span></h4>
+                            <ul>
+                                <li>🔹 <a href="https://www.exploit-db.com/google-hacking-database" target="_blank">Google Hacking Database (GHDB)</a></li>
+                                <li>🔹 <a href="https://github.com/rootaccesstech/Google-Dork-Cheatsheet" target="_blank">GitHub: Complete dork cheatsheet</a></li>
+                                <li>🔹 <a href="https://ahrefs.com/blog/google-advanced-search-operators/" target="_blank">Ahrefs: 41 advanced operators</a></li>
+                            </ul>
+                        </div>
+                        <div class="resource-card">
+                            <h4>🎓 Pentesting & OSINT</h4>
+                            <ul>
+                                <li>🔹 <a href="https://www.stationx.net/google-dorks-cheat-sheet/" target="_blank">StationX: Dorking for pentesters</a></li>
+                                <li>🔹 <a href="https://null-byte.wonderhowto.com/how-to/use-google-dorks-find-sensitive-information-websites-0199193/" target="_blank">Null Byte – Find sensitive data</a></li>
+                                <li>🔹 <a href="https://securitytrails.com/blog/google-hacking-techniques" target="_blank">SecurityTrails: GH techniques</a></li>
+                            </ul>
+                        </div>
+                        <div class="resource-card">
+                            <h4>⚙️ Automation Tools</h4>
+                            <ul>
+                                <li>🔹 <a href="https://github.com/s0md3v/Photon" target="_blank">Photon – OSINT & dork engine</a></li>
+                                <li>🔹 <a href="https://github.com/opsdisk/pagodo" target="_blank">Pagodo – automated GHDB scraper</a></li>
+                                <li>🔹 <a href="https://dorksearch.com/" target="_blank">DorkSearch.com – quick generator</a></li>
+                            </ul>
+                        </div>
+                        <div class="resource-card">
+                            <h4>🛡️ Vuln Hunting</h4>
+                            <ul>
+                                <li>🔹 <a href="https://www.exploit-db.com/google-hacking-database" target="_blank">GHDB by Offensive Security</a></li>
+                                <li>🔹 <a href="https://github.com/BullsEye0/google_dork_list" target="_blank">BullsEye0: 3000+ dorks</a></li>
+                                <li>🔹 <a href="https://pentest-tools.com/information-gathering/google-hacking" target="_blank">Pentest-Tools: Dork list</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <p style="color:#b0c4ce; margin-top: 20px; font-style: italic; border-top: 1px solid #2e4a5a; padding-top: 15px;" id="resourceFooterNote">
+                        🧠 Constantly updated. Use dorks ethically, only for authorized security testing.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <script>
+        let currentLanguage = 'en';
+        let showingCyber = false; // track if cyber presets are visible
+
+        const translations = {
+            en: {
+                headerTitle: '🛡️ Google Dork Builder — Cyber Security',
+                headerSubtitle: 'Professional dorks for penetration testing, OSINT & vulnerability research',
+                filterBy: '⚡ FILTER',
+                all: 'All',
+                basic: 'Basic',
+                advanced: 'Advanced',
+                utility: 'Utility',
+                cyberTab: '🛡️ CYBER SECURITY (20+)',
+                queryLabel: 'Generated Google Dork Query',
+                queryPlaceholder: 'Select operators above to build your query...',
+                searchButton: '🔍 Search on Google',
+                copyButton: '📋 Copy Query',
+                clearButton: '🗑️ Clear All',
+                quickPresets: '⚡ Quick Presets',
+                examplesTitle: '📚 Example Queries',
+                loginPages: '🔐 Login Pages',
+                adminPanels: '👤 Admin Panels',
+                dashboards: '📊 Dashboards',
+                phpVuln: '🐘 PHP Vulnerabilities',
+                configFiles: '⚙️ Config Files',
+                backupFiles: '💾 Backup Files',
+                copiedToast: 'Copied to clipboard!',
+                nothingToCopy: 'Nothing to copy!',
+                buildQuery: 'Please build a query first!',
+                allCleared: 'All fields cleared!',
+                exampleLoaded: 'Example loaded!',
+                presetLoaded: 'Preset loaded! Add site: to target specific domains',
+                example1: 'Find login pages on a specific site',
+                example2: 'Search for admin panels',
+                example3: 'Find PHP pages with query parameters',
+                example4: 'Search for exposed dashboards (excluding demos)',
+                example5: 'Find confidential PDFs (excluding samples)',
+                example6: 'Find Excel files with passwords (recent)',
+                example7: 'Search government PDF reports',
+                example8: 'Find old WordPress installations',
+                resourceMainTitle: 'Google Dorking • Resource Library',
+                resourceFooter: '🧠 Constantly updated. Use dorks ethically, only for authorized security testing.',
+                cyberLoaded: '🛡️ Cyber security dork loaded!',
+            },
+            bn: {
+                headerTitle: '🛡️ গুগল ডর্ক বিল্ডার — সাইবার সিকিউরিটি',
+                headerSubtitle: 'পেনিট্রেশন টেস্টিং, ওএসআইএনটি ও ভালনারেবিলিটি রিসার্চের জন্য প্রফেশনাল ডর্ক',
+                filterBy: '⚡ ফিল্টার',
+                all: 'সব',
+                basic: 'বেসিক',
+                advanced: 'উন্নত',
+                utility: 'ইউটিলিটি',
+                cyberTab: '🛡️ সাইবার সিকিউরিটি (২০+)',
+                queryLabel: 'তৈরি করা গুগল ডর্ক কুয়েরি',
+                queryPlaceholder: 'আপনার কুয়েরি তৈরি করতে উপরে অপারেটর সিলেক্ট করুন...',
+                searchButton: '🔍 গুগলে সার্চ করুন',
+                copyButton: '📋 কুয়েরি কপি করুন',
+                clearButton: '🗑️ সব মুছে ফেলুন',
+                quickPresets: '⚡ দ্রুত প্রিসেট',
+                examplesTitle: '📚 উদাহরণ কুয়েরি',
+                loginPages: '🔐 লগইন পেজ',
+                adminPanels: '👤 এডমিন প্যানেল',
+                dashboards: '📊 ড্যাশবোর্ড',
+                phpVuln: '🐘 PHP দুর্বলতা',
+                configFiles: '⚙️ কনফিগ ফাইল',
+                backupFiles: '💾 ব্যাকআপ ফাইল',
+                copiedToast: 'ক্লিপবোর্ডে কপি হয়েছে!',
+                nothingToCopy: 'কপি করার কিছু নেই!',
+                buildQuery: 'প্রথমে একটি কুয়েরি তৈরি করুন!',
+                allCleared: 'সব ফিল্ড মুছে ফেলা হয়েছে!',
+                exampleLoaded: 'উদাহরণ লোড হয়েছে!',
+                presetLoaded: 'প্রিসেট লোড হয়েছে! নির্দিষ্ট ডোমেইন টার্গেট করতে site: যোগ করুন',
+                example1: 'নির্দিষ্ট সাইটে লগইন পেজ খুঁজুন',
+                example2: 'এডমিন প্যানেল খুঁজুন',
+                example3: 'কুয়েরি প্যারামিটার সহ PHP পেজ খুঁজুন',
+                example4: 'উন্মুক্ত ড্যাশবোর্ড খুঁজুন (ডেমো বাদে)',
+                example5: 'গোপনীয় PDF খুঁজুন (স্যাম্পেল বাদে)',
+                example6: 'পাসওয়ার্ড সহ এক্সেল ফাইল খুঁজুন (সাম্প্রতিক)',
+                example7: 'সরকারি PDF রিপোর্ট খুঁজুন',
+                example8: 'পুরনো ওয়ার্ডপ্রেস ইনস্টলেশন খুঁজুন',
+                resourceMainTitle: 'গুগল ডর্কিং • রিসোর্স লাইব্রেরি',
+                resourceFooter: '🧠 সর্বদা আপডেটেড। ডর্ক সবসময় নৈতিকভাবে ব্যবহার করুন, অনুমোদিত নিরাপত্তা পরীক্ষার জন্যই ব্যবহার করুন।',
+                cyberLoaded: '🛡️ সাইবার সিকিউরিটি ডর্ক লোড হয়েছে!',
+            }
+        };
+
+        const operatorsTranslations = {
+            en: {
+                site: { desc: 'Restricts search results to a specific domain.', placeholder: 'Enter domain (e.g., example.com)' },
+                filetype: { desc: 'Filters results by a specific file type.', placeholder: 'Enter file extension (pdf, doc, xlsx, etc.)' },
+                ext: { desc: 'Finds a specific file extension (alternative to filetype).', placeholder: 'Enter file extension' },
+                inurl: { desc: 'Searches for specific text within URLs.', placeholder: 'Enter URL keyword' },
+                allinurl: { desc: 'Finds pages with multiple keywords in the URL.', placeholder: 'Enter URL keywords' },
+                intitle: { desc: 'Finds pages with specific text in the title.', placeholder: 'Enter title keyword' },
+                allintitle: { desc: 'Finds pages with multiple keywords in the title.', placeholder: 'Enter title keywords' },
+                intext: { desc: 'Finds pages containing a specific word in the body text.', placeholder: 'Enter text keyword' },
+                allintext: { desc: 'Searches for multiple words within page content.', placeholder: 'Enter text keywords' },
+                inanchor: { desc: 'Searches for keywords within the anchor text of links.', placeholder: 'Enter anchor text' },
+                allinanchor: { desc: 'Shows sites which have all keyterms in links pointing to them.', placeholder: 'Enter anchor text keywords' },
+                cache: { desc: 'Displays cached versions of web pages.', placeholder: 'Enter URL' },
+                link: { desc: 'Finds web pages linking to a specific URL.', placeholder: 'Enter URL' },
+                related: { desc: 'Displays pages related to a specific URL.', placeholder: 'Enter URL' },
+                info: { desc: 'Provides details about a website, including cache and similar pages.', placeholder: 'Enter domain' },
+                phonebook: { desc: 'Searches for phone numbers and contact information.', placeholder: 'Enter name or business' },
+                before: { desc: 'Used to search within a particular date range (before specified date).', placeholder: 'Enter date (YYYY-MM-DD)' },
+                after: { desc: 'Used to search within a particular date range (after specified date).', placeholder: 'Enter date (YYYY-MM-DD)' },
+                numrange: { desc: 'Used to locate specific numbers in your searches.', placeholder: 'Enter range (e.g., 100-200)' },
+                inpostauthor: { desc: 'Picks out blog posts that are written by specific individuals.', placeholder: 'Enter author name' },
+                allinpostauthor: { desc: 'Blog posts written by specific individuals (all keywords).', placeholder: 'Enter author keywords' },
+                exclude: { desc: 'Excludes results containing a specific word (use - operator).', placeholder: 'Enter word to exclude' }
+            },
+            bn: {
+                site: { desc: 'নির্দিষ্ট ডোমেইনে সার্চ সীমাবদ্ধ রাখে।', placeholder: 'ডোমেইন লিখুন (যেমন, example.com)' },
+                filetype: { desc: 'নির্দিষ্ট ফাইল টাইপ অনুযায়ী ফিল্টার করে।', placeholder: 'ফাইল এক্সটেনশন লিখুন (pdf, doc, xlsx, ইত্যাদি)' },
+                ext: { desc: 'নির্দিষ্ট ফাইল এক্সটেনশন খুঁজে (filetype এর বিকল্প)।', placeholder: 'ফাইল এক্সটেনশন লিখুন' },
+                inurl: { desc: 'URL এর মধ্যে নির্দিষ্ট টেক্সট খুঁজে।', placeholder: 'URL কীওয়ার্ড লিখুন' },
+                allinurl: { desc: 'URL এ একাধিক কীওয়ার্ড সহ পেজ খুঁজে।', placeholder: 'URL কীওয়ার্ডগুলো লিখুন' },
+                intitle: { desc: 'টাইটেলে নির্দিষ্ট টেক্সট সহ পেজ খুঁজে।', placeholder: 'টাইটেল কীওয়ার্ড লিখুন' },
+                allintitle: { desc: 'টাইটেলে একাধিক কীওয়ার্ড সহ পেজ খুঁজে।', placeholder: 'টাইটেল কীওয়ার্ডগুলো লিখুন' },
+                intext: { desc: 'বডি টেক্সটে নির্দিষ্ট শব্দ সহ পেজ খুঁজে।', placeholder: 'টেক্সট কীওয়ার্ড লিখুন' },
+                allintext: { desc: 'পেজ কন্টেন্টে একাধিক শব্দ খুঁজে।', placeholder: 'টেক্সট কীওয়ার্ডগুলো লিখুন' },
+                inanchor: { desc: 'লিঙ্কের অ্যাঙ্কর টেক্সটে কীওয়ার্ড খুঁজে।', placeholder: 'অ্যাঙ্কর টেক্সট লিখুন' },
+                allinanchor: { desc: 'লিঙ্কে সব কীওয়ার্ড সহ সাইট দেখায়।', placeholder: 'অ্যাঙ্কর টেক্সট কীওয়ার্ডগুলো লিখুন' },
+                cache: { desc: 'ওয়েব পেজের ক্যাশ করা সংস্করণ দেখায়।', placeholder: 'URL লিখুন' },
+                link: { desc: 'নির্দিষ্ট URL এ লিঙ্ক করা পেজ খুঁজে।', placeholder: 'URL লিখুন' },
+                related: { desc: 'নির্দিষ্ট URL এর সাথে সম্পর্কিত পেজ দেখায়।', placeholder: 'URL লিখুন' },
+                info: { desc: 'ওয়েবসাইট সম্পর্কে বিস্তারিত তথ্য দেয়।', placeholder: 'ডোমেইন লিখুন' },
+                phonebook: { desc: 'ফোন নম্বর এবং যোগাযোগের তথ্য খুঁজে।', placeholder: 'নাম বা ব্যবসা লিখুন' },
+                before: { desc: 'নির্দিষ্ট তারিখের আগের তথ্য খুঁজতে ব্যবহৃত হয়।', placeholder: 'তারিখ লিখুন (YYYY-MM-DD)' },
+                after: { desc: 'নির্দিষ্ট তারিখের পরের তথ্য খুঁজতে ব্যবহৃত হয়।', placeholder: 'তারিখ লিখুন (YYYY-MM-DD)' },
+                numrange: { desc: 'নির্দিষ্ট সংখ্যা খুঁজতে ব্যবহৃত হয়।', placeholder: 'রেঞ্জ লিখুন (যেমন, 100-200)' },
+                inpostauthor: { desc: 'নির্দিষ্ট লেখকের ব্লগ পোস্ট খুঁজে।', placeholder: 'লেখকের নাম লিখুন' },
+                allinpostauthor: { desc: 'নির্দিষ্ট লেখকের সব ব্লগ পোস্ট খুঁজে।', placeholder: 'লেখক কীওয়ার্ডগুলো লিখুন' },
+                exclude: { desc: 'নির্দিষ্ট শব্দ বাদ দেয় (- অপারেটর ব্যবহার করে)।', placeholder: 'বাদ দিতে শব্দ লিখুন' }
+            }
+        };
+
+        // Standard operators
+        const operators = [
+            { name: 'site', description: 'Restricts search results to a specific domain.', example: 'example.com', placeholder: 'Enter domain (e.g., example.com)', category: 'basic' },
+            { name: 'filetype', description: 'Filters results by a specific file type.', example: 'xlsx', placeholder: 'Enter file extension (pdf, doc, xlsx, etc.)', category: 'basic' },
+            { name: 'ext', description: 'Finds a specific file extension (alternative to filetype).', example: 'pdf', placeholder: 'Enter file extension', category: 'basic' },
+            { name: 'inurl', description: 'Searches for specific text within URLs.', example: 'login', placeholder: 'Enter URL keyword', category: 'basic' },
+            { name: 'allinurl', description: 'Finds pages with multiple keywords in the URL.', example: 'admin panel', placeholder: 'Enter URL keywords', category: 'basic' },
+            { name: 'intitle', description: 'Finds pages with specific text in the title.', example: 'index', placeholder: 'Enter title keyword', category: 'basic' },
+            { name: 'allintitle', description: 'Finds pages with multiple keywords in the title.', example: 'dashboard admin', placeholder: 'Enter title keywords', category: 'basic' },
+            { name: 'intext', description: 'Finds pages containing a specific word in the body text.', example: 'password', placeholder: 'Enter text keyword', category: 'basic' },
+            { name: 'allintext', description: 'Searches for multiple words within page content.', example: 'confidential document', placeholder: 'Enter text keywords', category: 'basic' },
+            { name: 'inanchor', description: 'Searches for keywords within the anchor text of links.', example: 'click here', placeholder: 'Enter anchor text', category: 'advanced' },
+            { name: 'allinanchor', description: 'Shows sites which have all keyterms in links pointing to them.', example: 'best deals', placeholder: 'Enter anchor text keywords', category: 'advanced' },
+            { name: 'cache', description: 'Displays cached versions of web pages.', example: 'www.example.com', placeholder: 'Enter URL', category: 'utility' },
+            { name: 'link', description: 'Finds web pages linking to a specific URL.', example: 'example.com', placeholder: 'Enter URL', category: 'utility' },
+            { name: 'related', description: 'Displays pages related to a specific URL.', example: 'www.example.com', placeholder: 'Enter URL', category: 'utility' },
+            { name: 'info', description: 'Provides details about a website, including cache and similar pages.', example: 'example.com', placeholder: 'Enter domain', category: 'utility' },
+            { name: 'phonebook', description: 'Searches for phone numbers and contact information.', example: 'John Doe', placeholder: 'Enter name or business', category: 'utility' },
+            { name: 'before', description: 'Used to search within a particular date range (before specified date).', example: '2020-01-01', placeholder: 'Enter date (YYYY-MM-DD)', category: 'advanced' },
+            { name: 'after', description: 'Used to search within a particular date range (after specified date).', example: '2020-01-01', placeholder: 'Enter date (YYYY-MM-DD)', category: 'advanced' },
+            { name: 'numrange', description: 'Used to locate specific numbers in your searches.', example: '100-200', placeholder: 'Enter range (e.g., 100-200)', category: 'advanced' },
+            { name: 'inpostauthor', description: 'Picks out blog posts that are written by specific individuals.', example: 'author name', placeholder: 'Enter author name', category: 'advanced' },
+            { name: 'allinpostauthor', description: 'Blog posts written by specific individuals (all keywords).', example: 'John Doe', placeholder: 'Enter author keywords', category: 'advanced' },
+            { name: 'exclude', description: 'Excludes results containing a specific word (use - operator).', example: 'unwanted', placeholder: 'Enter word to exclude', category: 'basic', special: true }
+        ];
+
+        // ============= CYBER SECURITY DORKS =============
+        const cyberDorks = [
+            { name: '📁 Exposed Directory Listing', dork: 'intitle:"index of" /', desc: 'Find open directory listings' },
+            { name: '🔐 SQLi Vulnerable Pages', dork: 'inurl:"id=" intext:"Warning: mysql_fetch_array()"', desc: 'SQL error disclosure' },
+            { name: '📄 WordPress Config', dork: 'inurl:"wp-config.php" intext:"DB_PASSWORD"', desc: 'WordPress database credentials' },
+            { name: '🖥️ PHPInfo Files', dork: 'ext:php intitle:phpinfo "PHP Version"', desc: 'Exposed phpinfo()' },
+            { name: '📦 .env Files', dork: 'inurl:.env intext:DB_PASSWORD filetype:env', desc: 'Environment variables with secrets' },
+            { name: '🔑 AWS Keys', dork: 'intext:"AWS_ACCESS_KEY_ID" intext:"AWS_SECRET_ACCESS_KEY"', desc: 'Leaked AWS credentials' },
+            { name: '🗄️ Backup SQL', dork: 'filetype:sql intext:"INSERT INTO" -sample', desc: 'Database backup files' },
+            { name: '📊 Kibana Dashboards', dork: 'inurl:app/kibana intitle:"Kibana"', desc: 'Exposed Kibana instances' },
+            { name: '🔎 Git Config', dork: 'filetype:gitconfig intext:user.name', desc: 'Git config exposure' },
+            { name: '📁 FTP Credentials', dork: 'intext:"FTP username" intext:"FTP password"', desc: 'Plaintext FTP credentials' },
+            { name: '📜 Passwords in Logs', dork: 'filetype:log intext:password', desc: 'Log files with passwords' },
+            { name: '🎯 Joomla Config', dork: 'filetype:php inurl:"configuration.php" intext:"$password"', desc: 'Joomla config' },
+            { name: '🕸️ Exposed Cobalt Strike', dork: 'inurl:"/cobalt" intitle:"Cobalt Strike"', desc: 'Cobalt Strike team servers' },
+            { name: '📧 Email Lists', dork: 'filetype:csv intext:"email" intext:"password"', desc: 'CSV with email:pass' },
+            { name: '🔴 Tomcat Manager', dork: 'inurl:"/manager/html" intitle:"Tomcat Manager"', desc: 'Tomcat admin panel' },
+            { name: '🧾 SSH Private Keys', dork: 'ext:pem intext:"BEGIN RSA PRIVATE KEY"', desc: 'Exposed SSH keys' },
+            { name: '🌐 VPN Configs', dork: 'filetype:ovpn intext:"remote"', desc: 'OpenVPN config files' },
+            { name: '📦 Composer.json', dork: 'inurl:composer.json intext:"require-dev"', desc: 'PHP dependencies, possible vulns' },
+            { name: '🛠️ Jenkins', dork: 'intitle:"Dashboard [Jenkins]" inurl:jenkins', desc: 'Unsecured Jenkins' },
+            { name: '🔄 Exposed API Docs', dork: 'inurl:/swagger-ui.html intitle:"Swagger UI"', desc: 'Swagger API documentation' },
+            { name: '📡 Webcam / CCTV', dork: 'inurl:viewer/live/index.html intitle:"Live View"', desc: 'Public cameras' },
+            { name: '⚙️ phpMyAdmin', dork: 'inurl:phpmyadmin intitle:phpMyAdmin', desc: 'Database admin panels' },
+            { name: '📋 CVS/RCS', dork: 'inurl:"CVS/Root" intext:"cvsroot"', desc: 'CVS repository exposure' }
+        ];
+
+        // Example queries (standard)
+        const examples = [
+            { site: 'example.com', inurl: 'login' },
+            { site: 'example.com', inurl: 'admin' },
+            { inurl: 'php', intext: 'id=' },
+            { intitle: 'dashboard', exclude: 'demo' },
+            { filetype: 'pdf', intext: 'confidential', exclude: 'sample' },
+            { filetype: 'xlsx', intext: 'password', after: '2020-01-01' },
+            { site: 'gov', filetype: 'pdf', intitle: 'report' },
+            { inurl: 'wp-content', filetype: 'php', before: '2020-01-01' }
+        ];
+
+        // Initialize operator cards
+        function initializeOperators() {
+            const grid = document.getElementById('operatorGrid');
+            operators.forEach((op) => {
+                const card = document.createElement('div');
+                card.className = 'operator-card';
+                card.id = `card-${op.name}`;
+                card.dataset.category = op.category || 'basic';
+                card.innerHTML = `
+                    <div class="operator-header">
+                        <input type="checkbox" class="operator-checkbox" id="check-${op.name}" onchange="toggleOperator('${op.name}')">
+                        <label for="check-${op.name}" class="operator-name">${op.name}</label>
+                    </div>
+                    <div class="operator-description">${op.description}</div>
+                    <input type="text" class="operator-input" id="input-${op.name}" placeholder="${op.placeholder}" disabled oninput="updateQuery()">
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Populate Cyber Security dorks grid
+        function buildCyberGrid() {
+            const cyberGrid = document.getElementById('cyberGrid');
+            cyberGrid.innerHTML = '';
+            cyberDorks.forEach((dork, index) => {
+                const card = document.createElement('div');
+                card.className = 'cyber-card';
+                card.onclick = () => loadCyberDork(dork.dork);
+                card.innerHTML = `
+                    <h5>${dork.name} <span style="margin-left:auto; font-size:0.7rem; background:#ff4d4d; padding:2px 8px; border-radius:12px;">PENTEST</span></h5>
+                    <p>${dork.dork}</p>
+                    <small style="color:#aaa;">${dork.desc}</small>
+                `;
+                cyberGrid.appendChild(card);
+            });
+        }
+
+        // Load cyber dork into result (clear previous, set query)
+        function loadCyberDork(dorkString) {
+            // Clear all checkboxes/inputs
+            clearAll();
+            // Manually set result output
+            const resultOutput = document.getElementById('resultOutput');
+            resultOutput.innerHTML = dorkString;
+            resultOutput.classList.remove('empty');
+            showToast(translations[currentLanguage].cyberLoaded || '🛡️ Cyber dork loaded', '#ff4d4d');
+        }
+
+        // Toggle between operator view and cyber security presets
+        function showCyberSecurityPresets() {
+            // Hide operator grid container, show cyber preset container
+            document.getElementById('operatorGridContainer').style.display = 'none';
+            document.getElementById('cyberPresetContainer').style.display = 'block';
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('cyberTabBtn').classList.add('active');
+            showingCyber = true;
+            // Build cyber grid if not already built
+            if (document.getElementById('cyberGrid').children.length === 0) {
+                buildCyberGrid();
+            }
+        }
+
+        // Override filterOperators to handle "all/basic/adv/utility" - show normal view
+        function filterOperators(category) {
+            // Show operator grid container, hide cyber container
+            document.getElementById('operatorGridContainer').style.display = 'block';
+            document.getElementById('cyberPresetContainer').style.display = 'none';
+            showingCyber = false;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Filter cards
+            document.querySelectorAll('.operator-card').forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Toggle operator checkbox
+        function toggleOperator(name) {
+            const checkbox = document.getElementById(`check-${name}`);
+            const input = document.getElementById(`input-${name}`);
+            const card = document.getElementById(`card-${name}`);
+            if (checkbox.checked) {
+                input.disabled = false;
+                card.classList.add('active');
+                input.focus();
+            } else {
+                input.disabled = true;
+                input.value = '';
+                card.classList.remove('active');
+            }
+            updateQuery();
+        }
+
+        function updateQuery() {
+            if (showingCyber) return; // don't overwrite cyber dork manually
+            const parts = [];
+            operators.forEach(op => {
+                const checkbox = document.getElementById(`check-${op.name}`);
+                const input = document.getElementById(`input-${op.name}`);
+                if (checkbox && checkbox.checked && input.value.trim()) {
+                    if (op.name === 'exclude') parts.push(`-${input.value.trim()}`);
+                    else parts.push(`${op.name}:"${input.value.trim()}"`);
+                }
+            });
+            const resultOutput = document.getElementById('resultOutput');
+            if (parts.length > 0) {
+                resultOutput.innerHTML = parts.join(' ');
+                resultOutput.classList.remove('empty');
+            } else {
+                resultOutput.innerHTML = `<span style="opacity: 0.6;">${translations[currentLanguage].queryPlaceholder}</span>`;
+                resultOutput.classList.add('empty');
+            }
+        }
+
+        function searchGoogle() {
+            const resultOutput = document.getElementById('resultOutput');
+            const query = resultOutput.textContent.trim();
+            if (query && !query.includes('Select operators') && !query.includes('সিলেক্ট করুন')) {
+                window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+            } else {
+                showToast(translations[currentLanguage].buildQuery, '#fc8181');
+            }
+        }
+
+        function copyToClipboard() {
+            const resultOutput = document.getElementById('resultOutput');
+            const query = resultOutput.textContent.trim();
+            if (query && !query.includes('Select operators') && !query.includes('সিলেক্ট করুন')) {
+                navigator.clipboard.writeText(query).then(() => showToast(translations[currentLanguage].copiedToast));
+            } else {
+                showToast(translations[currentLanguage].nothingToCopy, '#fc8181');
+            }
+        }
+
+        function clearAll() {
+            operators.forEach(op => {
+                const checkbox = document.getElementById(`check-${op.name}`);
+                const input = document.getElementById(`input-${op.name}`);
+                const card = document.getElementById(`card-${op.name}`);
+                if (checkbox) checkbox.checked = false;
+                if (input) { input.value = ''; input.disabled = true; }
+                if (card) card.classList.remove('active');
+            });
+            updateQuery();
+            showToast(translations[currentLanguage].allCleared, '#667eea');
+        }
+
+        function loadExample(index) {
+            // Ensure normal view
+            document.getElementById('operatorGridContainer').style.display = 'block';
+            document.getElementById('cyberPresetContainer').style.display = 'none';
+            showingCyber = false;
+            clearAll(); 
+            const example = examples[index];
+            Object.keys(example).forEach(key => {
+                const checkbox = document.getElementById(`check-${key}`);
+                const input = document.getElementById(`input-${key}`);
+                const card = document.getElementById(`card-${key}`);
+                if (checkbox && input) {
+                    checkbox.checked = true;
+                    input.disabled = false;
+                    input.value = example[key];
+                    card?.classList.add('active');
+                }
+            });
+            updateQuery();
+            showToast(translations[currentLanguage].exampleLoaded, '#667eea');
+        }
+
+        function loadPreset(type) {
+            // Ensure normal view
+            document.getElementById('operatorGridContainer').style.display = 'block';
+            document.getElementById('cyberPresetContainer').style.display = 'none';
+            showingCyber = false;
+            clearAll();
+            const presets = { 'login': { inurl: 'login' }, 'admin': { inurl: 'admin' }, 'dashboard': { intitle: 'dashboard' }, 'php': { inurl: 'php', intext: 'id=' }, 'config': { filetype: 'env', intext: 'DB_PASSWORD' }, 'backup': { inurl: 'backup', filetype: 'sql' } };
+            const preset = presets[type];
+            Object.keys(preset).forEach(key => {
+                const checkbox = document.getElementById(`check-${key}`);
+                const input = document.getElementById(`input-${key}`);
+                const card = document.getElementById(`card-${key}`);
+                if (checkbox && input) {
+                    checkbox.checked = true; input.disabled = false; input.value = preset[key]; card?.classList.add('active');
+                }
+            });
+            updateQuery();
+            showToast(translations[currentLanguage].presetLoaded, '#667eea');
+        }
+
+        function showToast(message, color = '#48bb78') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.background = color;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        // Language change
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            document.getElementById('headerTitle').textContent = translations[lang].headerTitle;
+            document.getElementById('headerSubtitle').textContent = translations[lang].headerSubtitle;
+            document.getElementById('filterLabel').textContent = translations[lang].filterBy;
+            let filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns[0].textContent = `${translations[lang].all} (22)`;
+            filterBtns[1].textContent = translations[lang].basic;
+            filterBtns[2].textContent = translations[lang].advanced;
+            filterBtns[3].textContent = translations[lang].utility;
+            filterBtns[4].textContent = translations[lang].cyberTab;  // Cyber tab
+
+            document.querySelector('.result-label').textContent = translations[lang].queryLabel;
+            if (document.getElementById('resultOutput').classList.contains('empty')) {
+                document.getElementById('resultOutput').innerHTML = `<span style="opacity: 0.6;">${translations[lang].queryPlaceholder}</span>`;
+            }
+            document.getElementById('searchBtn').innerHTML = translations[lang].searchButton;
+            document.getElementById('copyBtn').innerHTML = translations[lang].copyButton;
+            document.getElementById('clearBtn').innerHTML = translations[lang].clearButton;
+
+            document.getElementById('quickPresetsTitle').textContent = translations[lang].quickPresets;
+            document.getElementById('examplesTitle').textContent = translations[lang].examplesTitle;
+            document.getElementById('presetLogin').textContent = translations[lang].loginPages;
+            document.getElementById('presetAdmin').textContent = translations[lang].adminPanels;
+            document.getElementById('presetDashboard').textContent = translations[lang].dashboards;
+            document.getElementById('presetPhp').textContent = translations[lang].phpVuln;
+            document.getElementById('presetConfig').textContent = translations[lang].configFiles;
+            document.getElementById('presetBackup').textContent = translations[lang].backupFiles;
+
+            document.getElementById('example1Title').textContent = translations[lang].example1;
+            document.getElementById('example2Title').textContent = translations[lang].example2;
+            document.getElementById('example3Title').textContent = translations[lang].example3;
+            document.getElementById('example4Title').textContent = translations[lang].example4;
+            document.getElementById('example5Title').textContent = translations[lang].example5;
+            document.getElementById('example6Title').textContent = translations[lang].example6;
+            document.getElementById('example7Title').textContent = translations[lang].example7;
+            document.getElementById('example8Title').textContent = translations[lang].example8;
+
+            document.getElementById('resourceMainTitle').textContent = translations[lang].resourceMainTitle;
+            document.getElementById('resourceFooterNote').textContent = translations[lang].resourceFooter;
+
+            // Operator translations
+            operators.forEach(op => {
+                const descEl = document.querySelector(`#card-${op.name} .operator-description`);
+                const inputEl = document.getElementById(`input-${op.name}`);
+                if (descEl && operatorsTranslations[lang][op.name]) {
+                    descEl.textContent = operatorsTranslations[lang][op.name].desc;
+                    inputEl.placeholder = operatorsTranslations[lang][op.name].placeholder;
+                }
+            });
+
+            showToast(lang === 'bn' ? 'ভাষা পরিবর্তন হয়েছে!' : 'Language changed!', '#667eea');
+        }
+
+        window.onload = function() {
+            initializeOperators();
+            buildCyberGrid(); // pre-build cyber grid
+            // Ensure normal view
+            document.getElementById('operatorGridContainer').style.display = 'block';
+            document.getElementById('cyberPresetContainer').style.display = 'none';
+        };
+    </script>
+</body>
+</html>
